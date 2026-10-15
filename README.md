@@ -1,26 +1,39 @@
-# Candidate kit
+# Employee Attendance & Analytics API
 
-Read in this order:
+Solution for the HROne Engineering Assignment.
 
-1. `PROBLEM_STATEMENT.docx`: what you are asked to do, how it is evaluated.
-2. `openapi.yaml`: the API contract and the business rules (R1 - R10).
-3. `DATA_MODEL.md`: what is stored in MongoDB, with nine sample documents.
-4. `app/main.py`: the starter. Put **all** your code in this one file. It must start with `uvicorn app.main:app --port 8000`.
-5. `REVIEW.md`, `DECISIONS.md`: templates to fill in.
+## How to run
 
-`sample_data/` holds the nine sample documents as MongoDB Extended JSON; `sample_seed.py` loads them. The grader's dataset is
-much larger and contains cases they do not show.
+1. **Environment & Dependencies**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
 
-## Local setup
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env            # set MONGO_URI / MONGO_DB (local docker: docker run -p 27017:27017 mongo:7)
-python sample_seed.py
-uvicorn app.main:app --port 8000 --reload
-```
-MongoDB **6.0 or newer** is required (the grader uses 7.0). MongoDB Atlas free tier (M0) works.
+2. **Configuration**
+   Set `MONGO_URI` and `MONGO_DB` via environment variables or a local `.env` file:
+   ```env
+   MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority
+   MONGO_DB=attendance_db
+   ```
 
-## Submit
-A public Git repository with `app/main.py`, `requirements.txt`, `REVIEW.md`, `DECISIONS.md` and a short `README.md`.
-No `.env`, no secrets, no Dockerfile.
+3. **Seed Sample Data (Optional)**
+   ```bash
+   python sample_seed.py
+   ```
+
+4. **Run the API**
+   ```bash
+   uvicorn app.main:app --port 8000
+   ```
+   Interactive Swagger docs are accessible at `http://localhost:8000/docs`.
+
+## Anything we should know
+
+- **Single-File Implementation**: All application code lives inside `app/main.py`.
+- **Database Indexes**: Indexes on `employees` and `attendance_logs` are created idempotently at startup.
+- **R1-R10 Compliance**: Strictly implements business rules R1 through R10 including IST timezone handling, overnight shifts, competition ranking ties on the leaderboard, zero-log employee headcount, and half-up decimal rounding.
+- **Documentation**:
+  - `REVIEW.md` documents all 12 defects found in the starter code with root causes and fixes.
+  - `DECISIONS.md` answers all 5 design questions on indexes, race conditions, ties, headcount, and 100x data scaling.
